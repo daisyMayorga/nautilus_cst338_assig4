@@ -1,13 +1,25 @@
+/* ---------------------------------------------------------------------------------------------------------------- 
+Nautilus Group
+Caleb Allen
+Daisy Mayorga
+David Harrison
+Dustin Whittington
+Michael Cline
+CST 338
+M4: Optical Barcode Reader Java Program
+23 May 2017
 
-public class Assig4 {
+PURPOSE:
+
+----------------------------------------------------------------------------------------------------------------- */
+
+public class Assig4
+{
 
    public static void main(String[] args) 
    {
-      // TODO Auto-generated method stub
-      System.out.println("Assig4.main() runs!");
-
+      
    }
-
 }
 
 interface BarcodeIO
@@ -22,101 +34,128 @@ interface BarcodeIO
 
 class BarcodeImage implements Cloneable
 {
-   //The exact internal dimensions of 2D data.
    public static final int MAX_HEIGHT = 30;
    public static final int MAX_WIDTH = 65;
-   
-   /*
-   This is where to store your image.  If the
-   incoming data is smaller than the max, instantiate
-   memory anyway, but leave it blank (white). This
-   data will be false for elements that are white,
-   and true for elements that are black.
-   */
    private boolean[][] image_data;
-   
-   
-   /*
-   Constructors.  Two minimum, but you could have others:
-    */
+
+   // Default Constructor to set all values of image_data to false;
    public BarcodeImage()
    {
-      /*
-      Default Constructor -  instantiates a 2D array
-      (MAX_HEIGHT x MAX_WIDTH) and stuffs it all with
-      blanks (false).
-       */
+      image_data = new boolean[MAX_HEIGHT][MAX_WIDTH];
+      for (int row = 0; row < image_data.length; row++)
+      {
+         for (int column = 0; column < image_data[row].length; column++)
+         {
+            image_data[row][column] = false;
+         }
+      }
    }
-   
+
    public BarcodeImage(String[] str_data)
    {
-      /*
-      takes a 1D array of Strings and converts it to 
-      the internal 2D array of booleans. 
-      
-      HINT  -  This constructor is a little tricky
-      because the incoming image is not the necessarily
-      same size as the internal matrix.  So, you have to
-      pack it into the lower-left corner of the double
-      array, causing a bit of stress if you don't like
-      2D counting.  This is good 2D array exercise.  The
-      DataMatrix class will make sure that there is no
-      extra space below or left of the image so this
-      constructor can put it into the lower-left corner
-      of the array.
-       */
+      image_data = new boolean[MAX_HEIGHT][MAX_WIDTH];
+      // Make sure string is not null or larger than MAX_HEIGHT and MAX_WIDTH
+      if (checkSize(str_data))
+      {
+         // Nested for loop to set str_data '*' values to true and ' ' to false
+         // in image_data
+         for (int row = 0; row < str_data.length; row++)
+         {
+            for (int width = 0; width < str_data[row].length(); width++)
+            {
+               if (str_data[row].charAt(width) == '*')
+               {
+                  image_data[MAX_HEIGHT - str_data.length + row][width] = true;
+               } else if (str_data[row].charAt(width) == ' ')
+               {
+                  image_data[MAX_HEIGHT - str_data.length + row][width] = false;
+               }
+            }
+         }
+      }
+      displayToConsole();
    }
-   
-   /*
-   Accessor and mutator for each bit in the image:
-    */
-   boolean getPixel(int row, int col)
-   {
-      /*
-      For the getPixel(), you can use the return value
-      for both the actual data and also the error
-      condition -- so that we don't "create a scene"
-      if there is an error; we just return false.
-       */
-      return false;
-   }
-   
-   boolean setPixel(int row, int col, boolean value)
-   {
-      return false;
-   }
-   
-   public BarcodeImage clone()
-   {
-      /*
-      A clone() method that overrides the method of 
-      that name in Cloneable interface. 
-       */
-      return null;
-   }
-   
+
+   // Returns false if String array is null, or exceeds MAX_HEIGHT or MAX_WIDTH
+   // Returns true if String array is smaller or same size as MAX_HEIGHT and
+   // MAX_WIDTH
    private boolean checkSize(String[] data)
    {
-      /*
-      Optional - A private utility method is highly
-      recommended, but not required:  checkSize(String[]
-      data)  It does the job of checking the incoming
-      data for every conceivable size or null error. 
-      Smaller is okay.  Bigger or null is not.
-       */
-      return false;
+      if (data == null)
+      {
+         return false;
+      }
+      if (data.length > MAX_HEIGHT)
+      {
+         return false;
+      }
+      for (String s : data)
+      {
+         if (s.length() > MAX_WIDTH)
+         {
+            return false;
+         }
+      }
+      return true;
    }
-   
+
+   // returns a single pixel if row and col are valid values for image_data,
+   // false if they are invalid values
+   public boolean getPixel(int row, int col)
+   {
+      if (row > MAX_HEIGHT || row < 0)
+      {
+         return false;
+      }
+      if (col > MAX_WIDTH || col < 0)
+      {
+         return false;
+      }
+      return image_data[row][col];
+   }
+
+   // sets the pixel of image_data if row and col exist in image_data, returns
+   // false otherwise
+   public boolean setPixel(int row, int col, boolean value)
+   {
+      if (row > MAX_HEIGHT || row < 0)
+      {
+         return false;
+      }
+      if (col > MAX_WIDTH || col < 0)
+      {
+         return false;
+      }
+      image_data[row][col] = value;
+      return true;
+   }
+
+   // Displays image_data to console
    private void displayToConsole()
    {
-      /*
-      Optional - A displayToConsole() method that is
-      useful for debugging this class, but not very
-      useful for the assignment at large.
-       */
+      for (int row = 0; row < image_data.length; row++)
+      {
+         for (int column = 0; column < image_data[row].length; column++)
+         {
+            System.out.print(image_data[row][column]);
+         }
+         System.out.println();
+      }
    }
-   
-   
+
+   // Returns a BarcodeImage object identical to current BarcodeImage object
+   public BarcodeImage clone()
+   {
+      BarcodeImage clone = new BarcodeImage();
+      for (int row = 0; row < MAX_HEIGHT; row++)
+      {
+         for (int width = 0; width < MAX_WIDTH; width++)
+         {
+            clone.setPixel(row, width, image_data[row][width]);
+         }
+      }
+      return clone;
+   }
 }
 
 class DataMatrix implements BarcodeIO
