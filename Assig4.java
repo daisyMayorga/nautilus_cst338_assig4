@@ -259,7 +259,10 @@ class DataMatrix implements BarcodeIO
       default image, in practice.  The text can be set
       to blank, "", or something like "undefined".
        */
-      actualWidth = actualHeight = 0;
+      this.text = ""; 
+      this.actualWidth = 0; 
+      this.actualHeight = 0; 
+      //actualWidth = actualHeight = 0; 
    }
    
    public DataMatrix(BarcodeImage image)
